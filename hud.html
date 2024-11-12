@@ -1,56 +1,131 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jogo de Atualização de Código</title>
-  <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
-  <style>
-    #codigoContainer {
-      width: 100%;
-      height: 300px;
-      border: 1px solid #ccc;
-      margin-top: 20px;
-      padding: 10px;
-      overflow: auto;
-      background-color: #f9f9f9;
-      font-family: monospace;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="icon" type="png" href="https://cdn.discordapp.com/attachments/979773892048609350/1160287656522027149/chest.png?ex=65341d16&is=6521a816&hm=a1668ac29b46330c301bf3f3508914050934442061c293edf4c3ef6a3202b437&" />
+	<meta http-equiv="refresh" content="600" />
+    <title>ArmoryRush</title>
+    <style>
+        body {
+			justify-content: center;
+            background-color: transparent;
+			
+        }
+		.image-package {
+            position: relative; /* O contêiner precisa ter posição relativa */
+            width: 100px; /* Largura das imagens (ajuste conforme necessário) */
+            height: auto; /* Mantém a proporção da imagem */
+            margin: 0 auto; /* Centraliza horizontalmente o contêiner */
+        }
+		
+		.image {
+            position: absolute; /* As imagens têm posição absoluta */
+        }
+		
+		.boss_img {
+            top: 0;
+            transform: translateX(-40%);
+        }
+		.hud_div {
+			position: relative; /* O contêiner precisa ter posição relativa */
+		}
+		
+		.hud_img {
+			margin-top: -80px;
+			transform: translateX(-40%);
+			
+		}
+		.tier_img {
+			position: absolute;
+			height: 150px;
+			width: 150px;
+			margin-top: -214px;
+			margin-left: 229px;
+			transform: translateX(-40%);
+		}
+		
+		p {
+			position: absolute;
+			white-space: nowrap;
+			font-family: "Arial Black", sans-serif; 
+			font-style: bold;
+			max-width: 100%;
+		
+		}
+		
+		.participantes {
+			margin-top: -160px;
+			margin-left: -170px;
+			font-size: 32px;
+			color: white;
+			text-shadow: 2px 2px 2px black;
+			
+		}
+		.name {
+			margin-top: -110px;
+			margin-left: -170px;
+			font-size: 32px;
+			color: white;
+			text-shadow: 2px 2px 2px black;
+			
+		}
+		.hp {
+			margin-top: -70px;
+			margin-left: -170px;
+			font-size: 30px;
+			color: white;
+			text-shadow: 2px 2px 2px black;
+			
+		}
+		
+		
+		
+		
+    </style>
 </head>
 <body>
+	<div class='image-package'>
+		<img class ='boss_img' src='{BOSS_SPRITE}'>
+		<div class='hud_div'>
+		<img class ='hud_img' src='{HUD_SPRITE}'>
+		<img class ='tier_img' src='{BOSS_TIER}'>
+		<p class='participantes'>{BOSS_PARTICIPANTES}</p>
+		<p class='name'>{BOSS_NAME} {BOSS_LEVEL}</p>
+		<p class='hp' id='hp'>{BOSS_HP}</p>
+		</div>
+	</div>
+	
+	
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.3/socket.io.js"></script>
+    <script>
+        const socket = io.connect(window.location.origin);
 
-  <h1>Jogo de Atualização de Código</h1>
+        // Atualizar o conteúdo compartilhado quando receber uma mensagem do servidor
+        socket.on('update_boss_img', data => {
+			document.querySelector('.boss_img').src = data;
+		});
+		socket.on('update_hud_sprite', data => {
+			document.querySelector('.hud_img').src = data;
+		});
+		socket.on('update_tier_sprite', data => {
+			document.querySelector('.tier_img').src = data;
+		});
+		socket.on('update_participantes', data => {
+			document.querySelector('.participantes').textContent = data;
+		});
+		socket.on('update_name', data => {
+			console.log('testando..')
+			document.querySelector('.name').textContent = data;
+		});
+		socket.on('update_hp', data => {
+			document.querySelector('.hp').textContent = data;
+		});
+    </script>
 
-  <textarea id="codigoInput" rows="10" cols="50" placeholder="Digite o código HTML aqui..."></textarea>
-  <button id="enviarCodigo">Enviar Código</button>
+	
 
-  <div id="codigoContainer"></div>
-
-  <script>
-    // Conecta ao servidor via WebSocket
-    const socket = io();
-
-    // Recebe o código HTML atualizado
-    socket.on('codigo_atualizado', (data) => {
-      document.getElementById('codigoContainer').innerHTML = data.codigoHtml;
-    });
-
-    // Envia o código para o servidor
-    document.getElementById('enviarCodigo').onclick = () => {
-      const codigoHtml = document.getElementById('codigoInput').value;
-      fetch('/enviar_codigo', {
-        method: 'POST',
-        body: new URLSearchParams({
-          'codigoHtml': codigoHtml
-        }),
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      }).then(response => response.json())
-        .then(data => console.log(data));
-    };
-  </script>
-
+	
+	
 </body>
 </html>
